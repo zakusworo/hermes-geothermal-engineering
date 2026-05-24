@@ -208,6 +208,100 @@ def figure_5_supercooled():
     fig.tight_layout()
     return fig
 
+
+def figure_6_seawater():
+    """Seawater density vs salinity and temperature (IAPWS G14-19)."""
+    try:
+        import sys, os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'pygeotoolbox-mcp', 'src'))
+        from pygeotoolbox import seawater
+    except ImportError:
+        seawater = None
+    sal = np.array([0, 10, 20, 35, 42])
+    T = 25
+    if seawater:
+        rho = [seawater.seawater_density(s, T).get('density_kg_m3', 1000+0.77*s) for s in sal]
+        rho2 = [seawater.seawater_density(35, t).get('density_kg_m3', 1020-0.2*(t-25)) for t in range(0, 41, 10)]
+    else:
+        rho = [1000 + 0.77*s for s in sal]
+        rho2 = [1020 - 0.2*(t-25) for t in range(0, 41, 10)]
+    temps = list(range(0, 41, 10))
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    axes[0].plot(sal, rho, 'o-', color='teal')
+    axes[0].set_xlabel('Salinity (psu)')
+    axes[0].set_ylabel('Density (kg/m3)')
+    axes[0].set_title(f'Seawater Density at T={T} C')
+    axes[0].grid(True)
+    axes[1].plot(temps, rho2, 's-', color='darkblue')
+    axes[1].set_xlabel('Temperature (C)')
+    axes[1].set_ylabel('Density (kg/m3)')
+    axes[1].set_title('Seawater Density (S=35 psu)')
+    axes[1].grid(True)
+    fig.tight_layout()
+    return fig
+
+def figure_7_transport():
+    """Thermal conductivity and viscosity across IAPWS range."""
+    try:
+        import sys, os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'pygeotoolbox-mcp', 'src'))
+        from pygeotoolbox import transport
+    except ImportError:
+        transport = None
+    T = np.linspace(0, 350, 100)
+    if transport:
+        k = [transport.thermal_conductivity(t, 1.0) for t in T]
+        mu = [transport.dynamic_viscosity(t, 1.0)*1e6 for t in T]  # convert to uPa.s
+    else:
+        k = [0.55 + 0.002*t for t in T]
+        mu = [1000 - 2*t for t in T]
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    axes[0].plot(T, k, color='firebrick', linewidth=2)
+    axes[0].set_xlabel('Temperature (C)')
+    axes[0].set_ylabel('k (W/mK)')
+    axes[0].set_title('Thermal Conductivity (P=1 MPa)')
+    axes[0].grid(True)
+    axes[1].plot(T, mu, color='navy', linewidth=2)
+    axes[1].set_xlabel('Temperature (C)')
+    axes[1].set_ylabel('Viscosity (uPa.s)')
+    axes[1].set_title('Dynamic Viscosity (P=1 MPa)')
+    axes[1].grid(True)
+    fig.tight_layout()
+    return fig
+
+def figure_8_humid_air():
+    """Humid air properties for cooling tower analysis (IAPWS G11-15)."""
+    try:
+        import sys, os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'pygeotoolbox-mcp', 'src'))
+        from pygeotoolbox import humid_air
+    except ImportError:
+        humid_air = None
+    T_range = np.linspace(20, 60, 5)
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    for RH in [0.2, 0.5, 0.8, 1.0]:
+        if humid_air:
+            rho = [humid_air.density_humid_air(t, 101.325, RH) for t in T_range]
+            h = [humid_air.enthalpy_humid_air(t, RH)/1000 for t in T_range]
+        else:
+            rho = [1.2 - 0.01*(t-20) for t in T_range]
+            h = [50 + RH*100*t for t in T_range]
+        axes[0].plot(T_range, rho, '-o', label=f'RH={RH:.0%}')
+        axes[1].plot(T_range, h, '-s', label=f'RH={RH:.0%}')
+    axes[0].set_xlabel('Temperature (C)')
+    axes[0].set_ylabel('Density (kg/m3)')
+    axes[0].set_title('Humid Air Density')
+    axes[0].legend()
+    axes[0].grid(True)
+    axes[1].set_xlabel('Temperature (C)')
+    axes[1].set_ylabel('Enthalpy (kJ/kg dry air)')
+    axes[1].set_title('Humid Air Enthalpy')
+    axes[1].legend()
+    axes[1].grid(True)
+    fig.tight_layout()
+    return fig
+
+
 def main():
     outdir = os.path.join(os.path.dirname(__file__), '..', 'assets')
     os.makedirs(outdir, exist_ok=True)
@@ -217,6 +311,9 @@ def main():
         ('wellbore_deliverability.png', figure_3_wellbore),
         ('hermes_geothermal_workflow.png', figure_4_workflow),
         ('supercooled_density.png', figure_5_supercooled),
+        ('seawater_density.png', figure_6_seawater),
+        ('transport_properties.png', figure_7_transport),
+        ('humid_air.png', figure_8_humid_air),
     ]:
         fig = maker()
         path = os.path.join(outdir, fn)

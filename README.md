@@ -150,12 +150,15 @@ All exercises mapped to Hermes tool model: `terminal()`, `browser_navigate()`, `
 
 Run `python3 scripts/generate_course_figures.py` to regenerate.
 
-| Graph | File | Description |
+|| Graph | File | Description |
 |-------|------|-------------|
 | Separator Enthalpy & Temperature | `separator_enthalpy_temperature.png` | Steam/water enthalpy fractions and separator temperature trend |
 | Thermodynamic State Surface | `thermo_state_surface.png` | Density and enthalpy contours in T-P space (IAPWS-IF97) |
 | Wellbore Deliverability | `wellbore_deliverability.png` | IPR + TPR intersection; mass flow vs wellhead pressure |
 | Supercooled Water Density | `supercooled_density.png` | IAPWS G12-15: density and enthalpy trends for −22 to 0 °C |
+| Seawater Density | `seawater_density.png` | IAPWS G14-19: density vs salinity and temperature |
+| Transport Properties | `transport_properties.png` | Thermal conductivity and viscosity across IAPWS range |
+| Humid Air Properties | `humid_air.png` | IAPWS G11-15: density and enthalpy for cooling tower design |
 | Geothermal Workflow Map | `hermes_geothermal_workflow.png` | 5-step guardrail applied to geothermal |
 
 ### Separator Enthalpy Diagnostic
@@ -181,6 +184,49 @@ Run `python3 scripts/generate_course_figures.py` to regenerate.
 - IPR (Inflow Performance Relationship): mass flow vs flowing pressure
 - TPR (Tubing Performance Relationship): mass flow vs wellhead pressure (includes friction, elevation)
 - Operating point: IPR = TPR, within physical bounds (flow > 0, P_wf < P_res)
+
+### Supercooled Water
+
+![Supercooled density](assets/supercooled_density.png)
+
+- IAPWS G12-15 covers metastable liquid water from −22 to 0 °C.
+- Left: density decreases with cooling (water expands when supercooled).
+- Right: enthalpy becomes negative below 0 °C (reference at 0 °C liquid = 0).
+- Critical for EGS cold reinjection: colder brine = larger heat sink.
+
+### Seawater Density
+
+![Seawater density](assets/seawater_density.png)
+
+- IAPWS G14-19: density increases with salinity (~0.77 kg/m³ per psu).
+- Density decreases with temperature (thermal expansion).
+- Offshore/coastal geothermal: brine density determines stratification and circulation.
+
+### Transport Properties
+
+![Transport properties](assets/transport_properties.png)
+
+- IAPWS-IF97 release on thermal conductivity and viscosity.
+- Thermal conductivity peaks near boiling, then flattens in supercritical region.
+- Viscosity drops dramatically with temperature (affects friction losses).
+- Used for heat-exchanger sizing and wellbore pressure-drop calculations.
+
+### Humid Air
+
+![Humid air](assets/humid_air.png)
+
+- IAPWS G11-15: humid air properties for cooling tower and gas-extraction design.
+- Density decreases with both temperature and humidity (water vapor is lighter than dry air).
+- Enthalpy increases strongly with humidity (latent heat of evaporation).
+- Dew point marks the condensation boundary for cooling tower operation.
+
+### Geothermal Workflow Map
+
+![Workflow map](assets/hermes_geothermal_workflow.png)
+
+- 5-step guardrail: Explore -> Plan -> Implement -> Verify -> Review
+- Applied to geothermal engineering exercises in this repository
+- Each exercise follows this pattern explicitly
 
 ## Key Hermes Commands
 
