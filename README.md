@@ -204,6 +204,15 @@ physical. A case returns to PLAN until both the match and the physics checks are
 met. This is the central lesson of the course: AI tool outputs are trustworthy
 only when they are checked against the physics they claim to represent.
 
+**Use a different model for VERIFY.** The verification stage should be driven by a
+different LLM or agent than the one that wrote the code or ran the analysis. A
+model is weak at catching its own mistakes, because it shares the blind spots
+that produced them; an independent model finds far more. In practice we authored
+workflows with Hermes driving Kimi-2.6 and verified them with a separate agent
+(Claude Code, Opus 4.7), which surfaced errors the authoring model had missed.
+Treat VERIFY as an adversarial cross-model review, not a self-check, and record
+which model authored and which verified each result.
+
 <p align="center"><img src="assets/case_studies/fig8_kanban.png" width="720"></p>
 
 ## Prerequisites

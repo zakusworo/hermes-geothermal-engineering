@@ -2,6 +2,12 @@
 
 This is a Hermes course for geothermal reservoir engineering.  All code, analysis, and figures follow these rules.
 
+## Cross-model verification
+
+- The VERIFY / review stage must be run by a different LLM or agent than the one that produced the code or analysis. A model is poor at auditing its own output: it shares the blind spots that let the error through in the first place.
+- Pair generation with an independent reviewer model before trusting any result. Example from this project: code generated with Hermes + Kimi-2.6 was verified with Claude Code (Opus 4.7), which caught errors the authoring model had missed.
+- Record which model authored and which model verified, so the provenance of every checked result is clear.
+
 ## Units
 
 - Always use SI units internally:  

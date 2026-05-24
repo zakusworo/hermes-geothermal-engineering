@@ -3,6 +3,9 @@
 ## Goal
 Teach Hermes to use tests as quality gate.  Wellbore deliverability calculation is only trustworthy when bounded by known physics.
 
+## Use a different model to verify
+Run this verification with a different LLM or agent than the one that wrote the code. A model is weak at catching its own mistakes, so self-review misses errors that an independent model finds. In this course, code authored with Hermes + Kimi-2.6 was verified by a separate agent (Claude Code, Opus 4.7), which caught errors the authoring model had missed. Treat VERIFY as a cross-model second opinion, and note which model authored and which verified.
+
 ## Engineering Focus
 Inflow Performance Relationship (IPR) + Tubing Performance Relationship (TPR).  Operating point intersection must yield positive mass flow, flowing pressure below reservoir pressure, and wellhead pressure above atmospheric.
 
