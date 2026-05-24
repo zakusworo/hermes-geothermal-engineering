@@ -1,11 +1,8 @@
 """Tests for Exercise 2: thermodynamic state bug (IAPWS/enthalpy)."""
 from thermo_properties import enthalpy_from_TP, density_from_TP, PropsSI
 
-390.09        # kJ/kg at 90 C, 101.325 kPa (IAPWS-IF97 reference)
-    assert 30000 < h < 900000, f"h={h} J/kg is unrealistic for single-phase liquid"
-
 def test_density_positive():
-    rho = density_from_KP(150, 2000)
+    rho = density_from_TP(150, 2000)
     assert rho > 0, f"Density negative: {rho}"
 
 def test_known_value_200C_2MPa():
@@ -29,14 +26,14 @@ def test_monotonic_enthalpy_increases_with_T():
     for i in range(len(h_values) - 1):
         assert h_values[i+1] > h_values[i], "Enthalpy did not monotonically increase with T"
 
-def test_invalid_T_rejected():
+def test_invalid_input_rejected():
+    """Negative temperature must be rejected."""
     try:
         enthalpy_from_TP(-5, 2000)
         assert False, "Should have raised ValueError for negative temperature"
     except (ValueError, AssertionError):
         pass
 
-def test_invalid_P_rejected():
     try:
         enthalpy_from_TP(100, -100)
         assert False, "Should have raised ValueError for negative pressure"

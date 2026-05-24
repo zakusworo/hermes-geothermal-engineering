@@ -1,6 +1,11 @@
 import csv
 import io
 
+try:
+    from CoolProp.CoolProp import PropsSI
+except ImportError:
+    PropsSI = None
+
 # Sample geothermal well separator data
 DATA = """well,date,separator_T_C,separator_P_kPa
 A-01,2023-01-01,145,250
@@ -35,16 +40,17 @@ class DummyPropsSI:
         raise ValueError(f"Unknown property {what}")
 
 
-PropsSI = DummyPropsSI.PropsSI
+if PropsSI is None:
+    PropsSI = DummyPropsSI.PropsSI
 
 def enthalpy_from_TP(T_C, P_kPa):
     """Compute enthalpy (J/kg) from T (C) and P (kPa)."""
-    return PropsSI('H', 'T', T_C, 'P', P_kPa * 1000, 'Water')
+    return PropsSI('H', 'T', T_C + 273.15, 'P', P_kPa * 1000, 'Water')
 
 
 def density_from_TP(T_C, P_kPa):
     """Compute density (kg/m³) from T (C) and P (kPa)."""
-    return PropsSI('D', 'T', T_C, 'P', P_kPa * 1000, 'Water')
+    return PropsSI('D', 'T', T_C + 273.15, 'P', P_kPa * 1000, 'Water')
 
 
 if __name__ == '__main__':

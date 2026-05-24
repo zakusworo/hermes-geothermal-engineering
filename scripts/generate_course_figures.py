@@ -47,57 +47,82 @@ def figure_1_separator():
     return fig
 
 def figure_2_thermo_surface():
-    """Density contour in T-P space (placeholder).
-    In real work, compute via CoolProp."""
-    T = np.linspace(50, 350, 200)   # C
-    P = np.linspace(500, 10000, 200)  # kPa
+    """Density contour in T-P space using real CoolProp data."""
+    import os, sys
+    try:
+        from CoolProp.CoolProp import PropsSI
+    except ImportError:
+        # fallback to dummy contour if CoolProp unavailable
+        PropsSI = None
+    T = np.linspace(50, 350, 120)   # C
+    P = np.linspace(500, 10000, 120)  # kPa
     Tm, Pm = np.meshgrid(T, P)
-    # Placeholder: approximate single-phase liquid density decreasing with T and P
-    rho = 1000 - 0.4 * Tm + 0.02 * (Pm / 1000)
-    fig, ax = plt.subplots(figsize=(6, 5))
+    if PropsSI is None:
+        rho = 1000 - 0.4*Tm + 0.02*(Pm/1000)
+    else:
+        rho = np.zeros_like(Tm)
+        for i in range(Tm.shape[0]):
+            for j in range(Tm.shape[1]):
+                try:
+                    rho[i,j] = PropsSI('D', 'T', Tm[i,j]+273.15, 'P', Pm[i,j]*1000, 'Water')
+                except Exception:
+                    rho[i,j] = np.nan
+    fig, ax = plt.subplots(figsize=(7, 5.5))
     cs = ax.contourf(Tm, Pm/1000, rho, levels=20, cmap='viridis')
     ax.set_xlabel('Temperature (C)')
     ax.set_ylabel('Pressure (MPa)')
-    ax.set_title('Approximate Density Contour (kg/m3)')
+    ax.set_title('Water Density Contour (kg/m3) — CoolProp')
     cbar = fig.colorbar(cs)
     cbar.set_label('Density (kg/m3)')
-    # Annotate boiling curve (very rough Tsat approximation)
-    Tsat = 99.63 * (np.log10(Pm/1000 + 0.1) + 1.0) ** 0.3
-    ax.contour(Tm, Pm/1000, Tm - Tsat, levels=[0], colors='red', linewidths=1)
-    ax.text(300, 9.5, 'Saturation dome\n(approx)', color='red', fontsize=8)
+    # saturation dome rough overlay
+    if PropsSI is None:
+        Tsat = 99.63 * (np.log10(Pm/1000 + 0.1) + 1.0) ** 0.3
+        ax.contour(Tm, Pm/1000, Tm - Tsat, levels=[0], colors='red', linewidths=1)
+        ax.text(300, 9.5, 'Saturation dome\\n(approx)', color='red', fontsize=8)
+    else:
+        try:
+            import iapws
+            T_sat_arr = []
+            for p in P:
+                try:
+                    sat = iapws.IAPWS97(P=p/1000)
+                    T_sat_arr.append(sat.T-273.15 if getattr(sat, 'T', None) else np.nan)
+                except Exception:
+                    T_sat_arr.append(np.nan)
+            ax.plot(T_sat_arr, np.array(P)/1000, 'r--', label='Saturation dome', linewidth=1.5)
+            ax.legend(fontsize=8)
+        except Exception:
+            pass
     return fig
 
 def figure_3_wellbore():
-    """IPR + TPR with operating point."""
-    P_wf = np.linspace(500, 3000, 100)
-    P_res = 3000
+    """IPR + TPR with operating point (realistic geothermal parameters)."""
+    P_res = 20000
     J = 0.5
-    ipr = J * (P_res - P_wf)
-    ipr = np.clip(ipr, 0, None)
-    # TPR (simplified)
     rho = 900
     g = 9.81
-    TVD = 800
-    f = 0.02
-    L = 1000
+    TVD = 1200
+    L = 1500
     D = 0.2
+    f = 0.02
     v = 2.5
+    P_wf = np.linspace(500, P_res, 100)
+    ipr = J * (P_res - P_wf)
+    ipr = np.clip(ipr, 0, None)
     hydrostatic = rho * g * TVD / 1000
     friction = f * (L/D) * (rho * v**2) / 2 / 1000
     P_wh = P_wf - hydrostatic - friction
-    # Only plot region where IPR = TPR approximate intersection
-    fig, ax = plt.subplots(figsize=(6, 5))
-    ax.plot(ipr, P_wf, label='IPR (Inflow)', color='blue')
-    ax.plot(ipr, P_wh, label='TPR (Wellhead)', color='orange')
-    # Find approximate intersection by brute force
+    fig, ax = plt.subplots(figsize=(7, 5.5))
+    ax.plot(ipr, P_wf, label='IPR (Inflow)', color='blue', linewidth=2)
+    ax.plot(ipr, P_wh, label='TPR (Wellhead)', color='orange', linewidth=2)
     best_i = np.argmin(np.abs(P_wf - P_wh))
     q_op = ipr[best_i]
     p_op = P_wf[best_i]
-    ax.plot(q_op, p_op, 'ro', label=f'Operating point\nq={q_op:.0f} kg/s, P_wf={p_op:.0f} kPa')
+    ax.plot(q_op, p_op, 'ro', markersize=8, label=f'Operating point\\nq={q_op:.0f} kg/s, P_wf={p_op:.0f} kPa')
     ax.set_xlabel('Mass Flow (kg/s)')
     ax.set_ylabel('Pressure (kPa)')
-    ax.set_title('Wellbore Deliverability')
-    ax.legend()
+    ax.set_title('Wellbore Deliverability (P_res = 20 MPa)')
+    ax.legend(loc='upper right')
     ax.grid(True)
     ax.set_xlim(left=0)
     return fig
