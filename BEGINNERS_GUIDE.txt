@@ -1,0 +1,71 @@
+PANDUAN AWAM: Hermes untuk Teknik Geothermal
+
+Apa ini?
+Ini adalah kursus praktis untuk teknisi地热 (geothermal) yang ingin belajar
+menggunakan AI Assistant (Hermes Agent) untuk membantu pekerjaan engineering.
+Semua contoh menggunakan data panas bumi: sumur produksi, separator,
+enthalpy, tekanan, temperatur, dan analisis kelayakan.
+
+Siapa yang cocok?
+- Engineer geothermal / reservoir
+- Production engineer yang pegang data CSV sumur
+- Mahasiswa teknik panas bumi
+- Data scientist yang kerja di tim subsurface
+- Manajer teknis yang mau evaluasi AI untuk workflow engineering
+
+Apa yang dipelajari?
+1. Meminta AI membaca kode dulu sebelum edit (Explore -> Plan -> Code)
+2. Memberi instruksi spesifik: file mana, fungsi mana, test mana yang gagal
+3. Meminta AI menambahkan test (pengujian) sebelum dipercaya
+4. Menyimpan aturan geothermal di file CLAUDE.md agar AI ingat terus
+5. Membuat skill (keahlian) geothermal yang bisa dipakai berulang kali
+6. Mengirim kode berisiko ke "reviewer AI" (subagent) untuk dicek ulang
+7. Menggunakan command shell (terminal) untuk inspeksi data CSV
+8. Menggunakan tool thermodynamics (CoolProp / IAPWS) lewat MCP
+9. Menjalankan analisis sensitivitas paralel (cukup cepat)
+
+Cara cepat memulai (Quick Start)
+1. Buka folder ini di terminal WSL.
+2. Install Python dependencies:
+     python3 -m pip install -r requirements.txt
+3. Jalankan figure generator:
+     python3 scripts/generate_course_figures.py
+4. Mulai Hermes:
+     hermes
+5. Masuk ke Exercise 1:
+     cd 01_explore_plan_code
+6. Baca README.md, lalu coba "before prompt" (vague) lalu "after prompt" (spesifik).
+   Perbedaannya adalah inti dari kursus ini.
+
+9 Modul Latihan
+
+01_explore_plan_code       AI membaca kode & data dulu, baru edit
+02_specific_context        Beri instruksi spesifik (file, test, rumus)
+03_verify_your_work        Pastikan ada test + cek fisika
+04_init_project_memory     Simpan aturan geothermal di CLAUDE.md + AGENTS.md
+05_skills                  Pakai skill geothermal berulang kali
+06_subagent_review         Kirim kode ke AI reviewer
+07_cli_workflow            Gunakan terminal shell untuk QA data CSV
+08_mcp_geochem_thermo      Gunakan CoolProp / IAPWS live via MCP
+09_parallel_fanout         Jalankan skenario sensitivitas paralel
+
+Aturan Penting (Geothermal Standards)
+- Selalu pakai satuan SI (kPa, C, kJ/kg).
+- Selalu sebut fase air: subcooled, saturated, two-phase, atau superheated.
+- Jangan pernah bikin kurva halus yang menembus dome saturasi tanpa diskontinuitas.
+- Wellbore: q > 0, P_wf < P_res, P_wh > 0.
+- Setiap perhitungan harus punya: known-value check, monotonicity check, physical bounds check.
+
+Keamanan
+Hermes default menanyakan persetujuan sebelum command destruktif.
+Untuk batch/CI, gunakan hermes config set approvals.mode manual.
+
+Lisensi
+MIT License. Lihat file LICENSE.
+Copyright (c) 2025 Gabriel Serrao (kursus asli petroleum reservoir)
+Copyright (c) 2026 Zulfikar Aji Kusworo -- Hermes port, rewrite, figures, packaging, dan geothermal adaptation.
+
+Kontak & Kontribusi
+- GitHub: https://github.com/zakusworo/hermes-geothermal-engineering
+- Issue / PR: kirim melalui GitHub
+- Bantu tambah latihan baru, test yang lebih ketat, atau contoh data dari lapangan.
