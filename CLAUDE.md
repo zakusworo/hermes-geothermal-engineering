@@ -52,9 +52,10 @@ This is a Hermes course for geothermal reservoir engineering.  All code, analysi
 ## MCP Integration
 
 - Install pygeotoolbox-mcp as MCP server: `fastmcp run src/pygeotoolbox/mcp_server.py`
-- Exposes 24 tools to Hermes Agent: get_enthalpy, get_density, calculate_ipr, calculate_tpr, check_caco3_scaling, simulate_decline, etc.
+- Exposes 27 tools to Hermes Agent: get_enthalpy, get_density, calculate_ipr, calculate_tpr, check_caco3_scaling, simulate_decline, etc.
   + Tier 1: IAPWS saturation properties, thermal conductivity, dynamic viscosity
   + Tier 2: Seawater density/surface tension/conductivity, brine electrical conductivity, NaCl critical point
+  + Tier 2+: Supercooled water density/enthalpy/transport (IAPWS G12-15, −22 to 0 C)
 - Prefer MCP tools over raw CoolProp when working iteratively with Hermes.
 
 ## Simulation Mesh and Timestep

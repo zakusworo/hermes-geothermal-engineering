@@ -164,6 +164,50 @@ def figure_4_workflow():
     ax.axis('off')
     return fig
 
+def figure_5_supercooled():
+    """Supercooled water density trends for IAPWS G12-15 (0 C to -22 C)."""
+    try:
+        import sys, os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'pygeotoolbox-mcp', 'src'))
+        from pygeotoolbox import thermo_supercooled
+    except ImportError:
+        thermo_supercooled = None
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+    # Left: density vs temperature at two pressures
+    T = np.linspace(-22, 0, 100)
+    for P_MPa, color, label in [(0.1, 'teal', '0.1 MPa'), (10, 'crimson', '10 MPa')]:
+        if thermo_supercooled:
+            rho = [thermo_supercooled.density(t, P_MPa) for t in T]
+        else:
+            rho = [999.8 - 0.1*abs(t) for t in T]  # fallback
+        axes[0].plot(T, rho, color=color, linewidth=2, label=label)
+    axes[0].axvline(x=0, color='gray', linestyle='--', alpha=0.5, label='0 C boundary')
+    axes[0].set_xlabel('Temperature (C)')
+    axes[0].set_ylabel('Density (kg/m3)')
+    axes[0].set_title('Supercooled Water Density (IAPWS G12-15)')
+    axes[0].legend()
+    axes[0].grid(True)
+    axes[0].set_xlim(-25, 2)
+
+    # Right: enthalpy vs temperature
+    if thermo_supercooled:
+        h = [thermo_supercooled.enthalpy(t, 0.1)/1000 for t in T]
+    else:
+        h = [4.2*t for t in T]  # fallback
+    axes[1].plot(T, h, color='navy', linewidth=2)
+    axes[1].axvline(x=0, color='gray', linestyle='--', alpha=0.5)
+    axes[1].axhline(y=0, color='gray', linestyle=':', alpha=0.3)
+    axes[1].set_xlabel('Temperature (C)')
+    axes[1].set_ylabel('Specific Enthalpy (kJ/kg)')
+    axes[1].set_title('Supercooled Enthalpy (ref: 0 C = 0)')
+    axes[1].grid(True)
+    axes[1].set_xlim(-25, 2)
+
+    fig.tight_layout()
+    return fig
+
 def main():
     outdir = os.path.join(os.path.dirname(__file__), '..', 'assets')
     os.makedirs(outdir, exist_ok=True)
@@ -172,6 +216,7 @@ def main():
         ('thermo_state_surface.png', figure_2_thermo_surface),
         ('wellbore_deliverability.png', figure_3_wellbore),
         ('hermes_geothermal_workflow.png', figure_4_workflow),
+        ('supercooled_density.png', figure_5_supercooled),
     ]:
         fig = maker()
         path = os.path.join(outdir, fn)
