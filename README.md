@@ -76,6 +76,7 @@ No software engineering background needed.  Basic Python + terminal comfort is e
 |-- scripts/generate_course_figures.py
 |-- .hermes/skills/geothermal-engineering/  # Hermes geothermal skill (CoolProp, IPR, scaling)
 |-- .hermes/skills/run-tests/              # Test skill
+|-- .hermes/skills/cross-model-verify/     # Cross-model VERIFY skill (verifier must differ from author)
 |-- AGENTS.md                        # Reviewer subagent prompt
 |-- CLAUDE.md                        # Project rules
 |-- BEGINNERS_GUIDE.txt             # Panduan awam (Bahasa Indonesia)
@@ -211,7 +212,10 @@ that produced them; an independent model finds far more. In practice we authored
 workflows with Hermes driving Kimi-2.6 and verified them with a separate agent
 (Claude Code, Opus 4.7), which surfaced errors the authoring model had missed.
 Treat VERIFY as an adversarial cross-model review, not a self-check, and record
-which model authored and which verified each result.
+which model authored and which verified each result. This rule is packaged as the
+`cross-model-verify` skill (`.hermes/skills/cross-model-verify/`), which is
+model-agnostic: it requires only that the verifier differ from the author, never
+a specific model.
 
 <p align="center"><img src="assets/case_studies/fig8_kanban.png" width="720"></p>
 
