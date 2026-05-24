@@ -134,6 +134,11 @@ All exercises mapped to Hermes tool model: `terminal()`, `browser_navigate()`, `
 | 7 | `07_cli_workflow/` | Shell + Python QA | Timeseries CSV QA: NaN, out-of-range T/P, duplicates |
 | 8 | `08_mcp_geochem_thermo/` | MCP tools (CoolProp, IAPWS) | Live thermodynamic calls + geochemical checks |
 | 9 | `09_parallel_fanout/` | Parallel sensitivity | Sustainability, drawdown, injectivity scenarios |
+| 10 | `10_saturation_validation/` | IAPWS known-value tests | Validate T(P), P(T), steam quality at standard points |
+| 11 | `11_transport_verification/` | Physical trend verification | Thermal conductivity, viscosity, Prandtl number |
+| 12 | `12_two_phase_wellbore/` | Phase transition analysis | Single-phase vs two-phase flow regime |
+| 13 | `13_coastal_geothermal/` | Seawater properties | Density, heat extraction, offshore geothermal |
+| 14 | `14_geophysical_integration/` | Resistivity-salinity inversion | Geophysical exploration, anomalous zone detection |
 
 ## Illustrated Outputs
 
