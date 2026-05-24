@@ -72,6 +72,7 @@ No software engineering background needed.  Basic Python + terminal comfort is e
 |-- 12_two_phase_wellbore/          # Phase transition analysis
 |-- 13_coastal_geothermal/          # Seawater properties, offshore
 |-- 14_geophysical_integration/     # Resistivity → salinity
+|-- 15_supercooled_injection/       # IAPWS G12-15 cold reinjection
 |-- scripts/generate_course_figures.py
 |-- .hermes/skills/geothermal-engineering/  # Hermes geothermal skill (CoolProp, IPR, scaling)
 |-- .hermes/skills/run-tests/              # Test skill
@@ -142,7 +143,8 @@ All exercises mapped to Hermes tool model: `terminal()`, `browser_navigate()`, `
 | 11 | `11_transport_verification/` | Physical trend verification | Thermal conductivity, viscosity, Prandtl number |
 | 12 | `12_two_phase_wellbore/` | Phase transition analysis | Single-phase vs two-phase flow regime |
 | 13 | `13_coastal_geothermal/` | Seawater properties | Density, heat extraction, offshore geothermal |
-| 14 | `14_geophysical_integration/` | Resistivity-salinity inversion | Geophysical exploration, anomalous zone detection |
+| 14 | `14_geophysical_integration/` | Resistivity → salinity | Geophysical exploration, anomalous zone detection |
+| 15 | `15_supercooled_injection/` | Injection below 0 °C | IAPWS G12-15 cold reinjection heat sink |
 
 ## Illustrated Outputs
 
