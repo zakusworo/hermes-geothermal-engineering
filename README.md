@@ -84,23 +84,131 @@ No software engineering background needed.  Basic Python + terminal comfort is e
 |-- README.md
 ```
 
-## Validated Case Studies
+## Case Studies
 
-The same explore–plan–code–verify workflow taught here was applied to five
-published geothermal field cases, using [pygeotoolbox-mcp](https://github.com/zakusworo/pygeotoolbox-mcp)
-as the tool layer. With boundary conditions taken from the literature, the
-agent reproduced published net output with match ratios of 101.0% (Wairakei,
-NZ — triple-flash), 95.5% (Soultz, FR — EGS + isobutane ORC), 102.5% (Chena
-Hot Springs, US — low-temperature R134a binary ORC) and 99.3% (Hellisheidi,
-IS — two-phase triple-flash), and reproduced the centuries-scale thermal
-lifetime of Olkaria East (KE).
+The same explore–plan–code–verify workflow taught here was applied to **five
+published geothermal field cases**, using
+[pygeotoolbox-mcp](https://github.com/zakusworo/pygeotoolbox-mcp) as the tool
+layer. Each case was first solved by an established/published method (the
+"reference"), then re-solved by the agent with the toolbox; the two are
+compared below. Boundary conditions are taken from the literature, and a
+one-factor sensitivity sweep accompanies every case. All numbers are
+reproduced by `cases/run_all.py` → `results/results.json` in the companion
+study folder.
 
-The exercise also demonstrated the value of the **VERIFY** stage: it caught a
-second-law violation in an early binary-cycle attempt (evaporating R134a above
-its critical temperature, which a silent property-library fallback had masked),
-which was traced to its root cause and fixed in the toolbox (pygeotoolbox-mcp
-v0.5.2). This is the workflow's central lesson — AI tool outputs must be checked
-against first principles such as the Carnot limit and known critical points.
+| # | Site | Country | Technology | Reference (other methods) | Framework | Match |
+|---|------|---------|------------|---------------------------|-----------|-------|
+| 1 | Wairakei | New Zealand | Triple-flash (liquid-dominated) | 161 MW | 162.6 MW | **101.0%** |
+| 2 | Soultz-sous-Forêts | France | EGS + isobutane ORC | 1.5 MW | 1.43 MW | **95.5%** |
+| 3 | Chena Hot Springs | USA (Alaska) | Low-T R134a binary ORC | 210 kW | 215 kW | **102.5%** |
+| 4 | Hellisheidi | Iceland | Triple-flash (two-phase) | 303 MW | 301.0 MW | **99.3%** |
+| 5 | Olkaria East | Kenya | Reservoir sustainability | 25 °C / centuries | 8.9 °C field-avg / ~745 yr | sustainability |
+
+<p align="center"><img src="assets/case_studies/fig7_summary.png" width="560"></p>
+<p align="center"><i>Validation summary for the four power cases; all fall within the ±5% tolerance band.</i></p>
+
+**How agreement is framed.** To avoid overstating the result we distinguish:
+*physics-prediction with bounded calibration* (Wairakei, Hellisheidi — only the
+measured-uncertain wellhead enthalpy is calibrated within its field range),
+*cycle-driven prediction* (Soultz, Chena — conversion efficiency emerges from a
+closed ORC cycle, bounded by Carnot, not fitted), and a *deterministic balance*
+(Olkaria).
+
+### 1. Wairakei, New Zealand — liquid-dominated triple-flash
+
+**Keterangan.** World's first large geothermal plant (1958). Liquid-dominated
+geofluid at ~260 °C with 2.5% CO₂; modelled as a triple-flash plant
+(260/180/140 °C, η_turbine = 0.83, water-cooled condenser) at 1250 kg/s with a
+wellhead enthalpy of 1250 kJ/kg.
+
+<p align="center"><img src="assets/case_studies/fig1_wairakei.png" width="680"></p>
+
+| Quantity | Reference | Framework | Match |
+|----------|-----------|-----------|-------|
+| Net power (MW) | 161 | 162.6 | **101.0%** |
+| Gross power (MW) | ~195 | 206.0 | — |
+| Parasitic load | ~34 MW | 43.5 MW (21.1%) | — |
+| Stage steam fraction HP/MP/LP | ~11/16/8% | 6.9/18.5/8.1% | — |
+
+### 2. Soultz-sous-Forêts, France — EGS with an isobutane ORC
+
+**Keterangan.** Reference EGS pilot in granitic basement (~200 °C, ~5000 m). The
+toolbox first checks deliverability (IPR places the operating point at 25 kg/s),
+then computes power from a closed isobutane ORC cycle (evaporator 125 °C, below
+the isobutane critical temperature of 134.7 °C). The conversion efficiency is an
+output of the cycle, not fitted to the published power.
+
+<p align="center"><img src="assets/case_studies/fig2_soultz_ipr.png" width="430"> <img src="assets/case_studies/fig3_soultz_orc.png" width="430"></p>
+
+| Quantity | Reference | Framework | Match |
+|----------|-----------|-----------|-------|
+| Net power (MW) | 1.5 | 1.43 | **95.5%** |
+| Flow rate (kg/s) | 25 | 25 | 0% |
+| ORC cycle efficiency | ~13–14% | 13.2% (< Carnot 23.9%) | — |
+
+### 3. Chena Hot Springs, Alaska — low-temperature R134a binary ORC
+
+**Keterangan.** The lowest-temperature commercial geothermal resource (73.3 °C),
+driving R134a binary modules cooled by near-freezing creek water. R134a
+evaporates at 70 °C — below its 101.1 °C critical point — so the cycle is
+physically valid. *This case replaced an earlier Krafla attempt that the VERIFY
+stage rejected* (see note below).
+
+<p align="center"><img src="assets/case_studies/fig4_chena.png" width="680"></p>
+
+| Quantity | Reference | Framework | Match |
+|----------|-----------|-----------|-------|
+| Net power (kW) | 210 | 215 | **102.5%** |
+| Resource temperature (°C) | 73.3 | 73.3 | 0% |
+| ORC cycle efficiency | ~8% | 9.5% (< Carnot 16.0%) | — |
+
+### 4. Hellisheidi, Iceland — high-enthalpy two-phase triple-flash
+
+**Keterangan.** One of the largest geothermal plants (303 MW), fed by
+high-enthalpy two-phase wells. Modelled as triple-flash (220/170/120 °C,
+η_turbine = 0.87, air-cooled) at 1300 kg/s with a two-phase wellhead enthalpy of
+1500 kJ/kg (separator quality x ≈ 0.30).
+
+<p align="center"><img src="assets/case_studies/fig5_hellisheidi.png" width="680"></p>
+
+| Quantity | Reference | Framework | Match |
+|----------|-----------|-----------|-------|
+| Net power (MW) | 303 | 301.0 | **99.3%** |
+| Gross power (MW) | ~330–340 | 334.4 | — |
+| Parasitic load | ~27–30 MW | 33.4 MW (10%) | — |
+| Separator quality x | ~0.3 | 0.30 | — |
+
+### 5. Olkaria East, Kenya — reservoir sustainability
+
+**Keterangan.** Producing since 1981; the ~25 °C near-well temperature decline
+over 30 years is the classic sustainability benchmark. A lumped whole-field
+energy balance reproduces the *field-average* behaviour and the sustainability
+conclusion (we are explicit that the localized 25 °C near-well decline is not
+resolved by a single-tank model).
+
+<p align="center"><img src="assets/case_studies/fig6_olkaria.png" width="470"></p>
+
+| Quantity | Reference / observed | Framework | Note |
+|----------|----------------------|-----------|------|
+| Extraction rate (MW) | ~200 | 204.8 | energy balance |
+| 30-yr decline (°C) | 25 (near-well) | 8.9 (field-average) | localized vs lumped |
+| Thermal lifetime (yr) | centuries | ~745 | sustainable |
+| Heat extracted in 30 yr | small | 4.0% | sustainable |
+
+### The VERIFY stage in action
+
+The case studies also demonstrated the value of the **VERIFY** stage. An early
+binary-cycle attempt (the original Krafla case) evaporated R134a at 150 °C —
+above its 101.1 °C critical temperature. The property library could not return a
+saturated state and *silently fell back to a crude polynomial*, mixing enthalpy
+reference scales and reporting a cycle efficiency of ~85% (far above the 27%
+Carnot limit — a second-law violation). VERIFY flagged it (efficiency must not
+exceed Carnot), the cause was traced to the silent fallback, and the toolbox was
+corrected with an explicit critical-temperature guard (pygeotoolbox-mcp v0.5.2).
+The lesson: AI tool outputs must be checked against first principles such as the
+Carnot limit and known critical points.
+
+<p align="center"><img src="assets/case_studies/fig8_kanban.png" width="720"></p>
 
 ## Prerequisites
 
