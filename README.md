@@ -150,9 +150,8 @@ output of the cycle, not fitted to the published power.
 
 **Keterangan.** The lowest-temperature commercial geothermal resource (73.3 °C),
 driving R134a binary modules cooled by near-freezing creek water. R134a
-evaporates at 70 °C — below its 101.1 °C critical point — so the cycle is
-physically valid. *This case replaced an earlier Krafla attempt that the VERIFY
-stage rejected* (see note below).
+evaporates at 70 °C, below its 101.1 °C critical point, so the subcritical ORC is
+physically valid and its cycle efficiency stays below the Carnot limit.
 
 <p align="center"><img src="assets/case_studies/fig4_chena.png" width="680"></p>
 
@@ -195,18 +194,15 @@ resolved by a single-tank model).
 | Thermal lifetime (yr) | centuries | ~745 | sustainable |
 | Heat extracted in 30 yr | small | 4.0% | sustainable |
 
-### The VERIFY stage in action
+### The VERIFY stage
 
-The case studies also demonstrated the value of the **VERIFY** stage. An early
-binary-cycle attempt (the original Krafla case) evaporated R134a at 150 °C —
-above its 101.1 °C critical temperature. The property library could not return a
-saturated state and *silently fell back to a crude polynomial*, mixing enthalpy
-reference scales and reporting a cycle efficiency of ~85% (far above the 27%
-Carnot limit — a second-law violation). VERIFY flagged it (efficiency must not
-exceed Carnot), the cause was traced to the silent fallback, and the toolbox was
-corrected with an explicit critical-temperature guard (pygeotoolbox-mcp v0.5.2).
-The lesson: AI tool outputs must be checked against first principles such as the
-Carnot limit and known critical points.
+The case studies show why the **VERIFY** stage matters. Every result is held to
+two tests: the match against published output, and first-principles physics
+checks. A cycle efficiency must stay below its Carnot limit, a working fluid is
+only evaporated below its critical temperature, and exhaust qualities must be
+physical. A case returns to PLAN until both the match and the physics checks are
+met. This is the central lesson of the course: AI tool outputs are trustworthy
+only when they are checked against the physics they claim to represent.
 
 <p align="center"><img src="assets/case_studies/fig8_kanban.png" width="720"></p>
 
