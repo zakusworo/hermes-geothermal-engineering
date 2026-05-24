@@ -49,7 +49,7 @@ No software engineering background needed.  Basic Python + terminal comfort is e
 
 - Original reservoir course: `Claude-for-reservoir-engineering` by Gabriel Serrao  
 - Hermes port: `hermes-reservoir-engineering` by Zulfikar Aji Kusworo
-- Companion toolbox: [pygeotoolbox-mcp](https://github.com/zakusworo/pygeotoolbox-mcp) — Geothermal engineering MCP server with 15+ tools (thermo, wellbore, scaling, decline, heat balance, sensitivity) using CoolProp + IAPWS-IF97
+- Companion toolbox: [pygeotoolbox-mcp](https://github.com/zakusworo/pygeotoolbox-mcp) — Geothermal engineering MCP server with 24 tools (thermo, saturation, transport, seawater, geophysics, wellbore, scaling, decline, heat balance, sensitivity) using CoolProp + IAPWS-IF97
 - Waiwera simulator (Fortran/PETSc): insight into geothermal flow simulation structure  
 - CoolProp and IAPWS-IF97 for reliable thermodynamic properties  
 - Geochemist's Workbench / PHREEQC for geochemical calculations  
@@ -58,16 +58,20 @@ No software engineering background needed.  Basic Python + terminal comfort is e
 
 ```text
 .
-|-- 01_explore_plan_code/           # Production enthalpy analysis: explore, plan, implement
-|-- 02_specific_context/            # Thermodynamic state bug: precise context beats vague prompts
-|-- 03_verify_your_work/            # Wellbore deliverability checks: tests and sanity checks
-|-- 04_init_project_memory/           # Geothermal project memory (CLAUDE.md + AGENTS.md)
+|-- 01_explore_plan_code/           # Production enthalpy analysis
+|-- 02_specific_context/            # Thermodynamic state bug fix
+|-- 03_verify_your_work/            # Wellbore deliverability checks
+|-- 04_init_project_memory/         # Geothermal project memory
 |-- 05_skills/                      # Reusable Hermes geothermal skills
-|-- 06_subagent_review/             # Reviewer subagent for units & thermodynamic consistency
-|-- 07_cli_workflow/                # Shell + Python QA for timeseries data
-|-- 08_mcp_geochem_thermo/          # CoolProp / IAPWS / geochem via MCP
-|-- 09_parallel_fanout/             # Parallel sustainability / drawdown studies
-|-- assets/                          # Generated plots + result tables
+|-- 06_subagent_review/             # Reviewer subagent
+|-- 07_cli_workflow/                # Shell + Python QA
+|-- 08_mcp_geochem_thermo/          # CoolProp / IAPWS via MCP
+|-- 09_parallel_fanout/             # Parallel sustainability studies
+|-- 10_saturation_validation/       # IAPWS known-value tests
+|-- 11_transport_verification/      # Physical trend verification
+|-- 12_two_phase_wellbore/          # Phase transition analysis
+|-- 13_coastal_geothermal/          # Seawater properties, offshore
+|-- 14_geophysical_integration/     # Resistivity → salinity
 |-- scripts/generate_course_figures.py
 |-- .hermes/skills/geothermal-engineering/  # Hermes geothermal skill (CoolProp, IPR, scaling)
 |-- .hermes/skills/run-tests/              # Test skill
