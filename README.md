@@ -31,6 +31,7 @@ By the end:
 - run a reviewer subagent for unit consistency, correlation range, nonphysical output
 - combine shell + Python for CSV/datalog QA before analysis
 - use thermodynamic tools (CoolProp, iapws, geochem) via MCP or direct Python
+- use pygeotoolbox-mcp for batch thermo, wellbore, scaling, and sensitivity calculations
 - parallelize independent sensitivity cases (injectivity, drawdown, sustainability)
 
 ## Who This Is For
@@ -82,7 +83,7 @@ No software engineering background needed.  Basic Python + terminal comfort is e
 
 - Hermes Agent: https://hermes-agent.nousresearch.com/docs/
 - Python 3.10+ and `pip`
-- `coolprop`, `iapws`, `matplotlib`, `numpy`, `pandas`, `pytest`
+- `coolprop`, `iapws`, `matplotlib`, `numpy`, `pandas`, `pytest`, `pygeotoolbox-mcp`
 - Optional: `phreeqpy` or `geochem` for Module 8
 - Optional: WSL or Linux for shell workflows
 
@@ -190,6 +191,7 @@ hermes -s geothermal-engineering    # preload skill
 ```bash
 python3 -m pytest -v
 python3 -m pytest 01_explore_plan_code/ -v
+python3 -m pytest pygeotoolbox-mcp/tests/ -v  # if installed from source
 ```
 
 Tests are teaching tools.  Add real-edge cases and known IAPWS-IF97 reference values for production use.
@@ -219,9 +221,30 @@ rho = sat.rho                      # kg/m3
 - Always verify input is within valid range (T < 1273 K, P < 100 MPa)
 - Never silently assume single phase if T,P is near saturation dome
 
-## Using pyrestoolbox-mcp (if configured)
+## Using pygeotoolbox-mcp (recommended)
 
-For Hermes with MCP, `pyrestoolbox-mcp` can expose PVT functions; geothermal adaptation uses IAPWS / CoolProp MCP equivalents.
+This course ships with **[pygeotoolbox-mcp](https://github.com/zakusworo/pygeotoolbox-mcp)**, a dedicated geothermal MCP server inspired by the structure of pyrestoolbox-mcp but reimplemented from scratch for geothermal engineering.
+
+**Install:**
+```bash
+pip install git+https://github.com/zakusworo/pygeotoolbox-mcp.git
+```
+
+**Register in Hermes:**
+```yaml
+mcp_servers:
+  pygeotoolbox:
+    command: fastmcp run /path/to/pygeotoolbox-mcp/src/pygeotoolbox/mcp_server.py
+    transport: stdio
+```
+
+**What it provides:**
+- **Thermo** — enthalpy, density, viscosity, cp, conductivity, phase, saturation temperature, batch properties
+- **Wellbore** — IPR, TPR, operating point, productivity index
+- **Scaling** — CaCO3 RSI, SiO2 scaling risk, corrosivity index
+- **Decline** — exponential, hyperbolic, reinjection temperature model
+- **Heat Balance** — reservoir heat, thermal recovery, power output, NPV
+- **Sensitivity** — Monte Carlo, one-factor sweep, tornado charts, rank correlation
 
 Recommended response format for any calculation:
 
@@ -276,8 +299,9 @@ MIT License. See `LICENSE`.
 
 ## Acknowledgements
 
-- Claude Code ecosystem + `claude-code-for-hydrology`
-- pyResToolbox / pyrestoolbox-mcp (Mark Burgoyne)
-- Waiwera geothermal simulator (University of Auckland)
-- IAPWS-IF97 formulation and CoolProp
-- Nous Research Hermes Agent
+- **Claude Code ecosystem** + `claude-code-for-hydrology` — original inspiration for AI-assisted engineering workflows
+- **pyResToolbox** (Mark Burgoyne) — petroleum engineering PVT/nodal/DCA library (GPL-3.0); its module structure inspired the layout of this geothermal toolbox, but all implementation here is new
+- **pyrestoolbox-mcp** (Gabriel Serrao) — MCP server wrapper for pyResToolbox; inspired the FastMCP tool registry design in pygeotoolbox-mcp, with tools reimplemented for geothermal domain
+- **Waiwera geothermal simulator** (University of Auckland) — insight into geothermal flow simulation structure and mesh/timestep conventions
+- **IAPWS-IF97 formulation** and **CoolProp** — international standard for water/steam thermodynamic properties
+- **Nous Research Hermes Agent** — the platform that makes this entire guardrail-driven workflow possible
