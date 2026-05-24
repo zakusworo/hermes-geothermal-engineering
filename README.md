@@ -84,6 +84,24 @@ No software engineering background needed.  Basic Python + terminal comfort is e
 |-- README.md
 ```
 
+## Validated Case Studies
+
+The same explore–plan–code–verify workflow taught here was applied to five
+published geothermal field cases, using [pygeotoolbox-mcp](https://github.com/zakusworo/pygeotoolbox-mcp)
+as the tool layer. With boundary conditions taken from the literature, the
+agent reproduced published net output with match ratios of 101.0% (Wairakei,
+NZ — triple-flash), 95.5% (Soultz, FR — EGS + isobutane ORC), 102.5% (Chena
+Hot Springs, US — low-temperature R134a binary ORC) and 99.3% (Hellisheidi,
+IS — two-phase triple-flash), and reproduced the centuries-scale thermal
+lifetime of Olkaria East (KE).
+
+The exercise also demonstrated the value of the **VERIFY** stage: it caught a
+second-law violation in an early binary-cycle attempt (evaporating R134a above
+its critical temperature, which a silent property-library fallback had masked),
+which was traced to its root cause and fixed in the toolbox (pygeotoolbox-mcp
+v0.5.2). This is the workflow's central lesson — AI tool outputs must be checked
+against first principles such as the Carnot limit and known critical points.
+
 ## Prerequisites
 
 - Hermes Agent: https://hermes-agent.nousresearch.com/docs/
