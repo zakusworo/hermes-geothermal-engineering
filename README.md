@@ -47,7 +47,8 @@ No software engineering background needed.  Basic Python + terminal comfort is e
 ## Source Inspiration
 
 - Original reservoir course: `Claude-for-reservoir-engineering` by Gabriel Serrao  
-- Hermes port: `hermes-reservoir-engineering` by Zulfikar Aji Kusworo  
+- Hermes port: `hermes-reservoir-engineering` by Zulfikar Aji Kusworo
+- Companion toolbox: [pygeotoolbox-mcp](https://github.com/zakusworo/pygeotoolbox-mcp) — Geothermal engineering MCP server with 15+ tools (thermo, wellbore, scaling, decline, heat balance, sensitivity) using CoolProp + IAPWS-IF97
 - Waiwera simulator (Fortran/PETSc): insight into geothermal flow simulation structure  
 - CoolProp and IAPWS-IF97 for reliable thermodynamic properties  
 - Geochemist's Workbench / PHREEQC for geochemical calculations  
