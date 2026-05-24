@@ -1,30 +1,23 @@
 # Exercise 2: Specific Context
 
 ## Goal
-Teach Hermes that precise context (failing test, exact file, formula) produces correct fixes faster than vague prompts.
+Teach Hermes that precise context produces correct fixes faster than vague prompts.
+This module now uses **pygeotoolbox-mcp** for reliable thermodynamic properties (CoolProp + IAPWS-IF97).
 
 ## Engineering Focus
-Thermodynamic state bug: a fake `PropsSI` wrapper ignores pressure and returns physics-wrong enthalpy.  Fixing this requires naming the failing test and the expected IAPWS-IF91 formula.
+Thermodynamic state validation: enthalpy and density from T and P via real CoolProp PropsSI.
 
-## Before Prompt (vague)
+## Prompt Example
 ```
-Fix the thermo bug.
-```
-
-## After Prompt (precise)
-```
-The test test_known_value_200C_2MPa in 02_specific_context/test_thermo_properties.py fails.
-Current PropsSI is a dummy that ignores pressure and returns h = 4.18*T + 50.
-Replace with real CoolProp PropsSI('H', 'T', T_K, 'P', P_Pa, 'Water') and check that at 200 C (473.15 K), 2000 kPa:
-  - enthalpy is ~852 kJ/kg
-  - density is ~865 kg/m3
-Also add a monotonicity test: at 1500 kPa, enthalpy must increase with temperature from 120 C to 180 C.
+In 02_specific_context/thermo_properties.py, verify that enthalpy_from_TP(200, 2000)
+returns ~852 kJ/kg and density_from_TP(200, 2000) returns ~865 kg/m3.
+Also add monotonicity test: at 1500 kPa, enthalpy must increase with T from 120C to 180C.
 Run pytest 02_specific_context/.
 ```
 
 ## Checklist
-- [ ] Failing test named
-- [ ] Expected reference values given
+- [ ] Enthalpy at 200C, 2 MPa matches IAPWS (852 kJ/kg)
+- [ ] Density at 200C, 2 MPa ~865 kg/m3
 - [ ] Monotonicity test added
-- [ ] Invalid inputs rejected
+- [ ] Invalid inputs rejected (negative T/P)
 - [ ] All tests pass

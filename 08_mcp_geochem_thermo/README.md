@@ -1,25 +1,62 @@
-# Exercise 8: MCP-Backed Thermodynamic Tool
+# Exercise 8: MCP Thermo + Geochem
 
 ## Goal
-Teach Hermes to use external MCP tools (CoolProp / IAPWS / geochem) for live calculations rather than inventing formulas.
+Install and use pygeotoolbox-mcp as MCP server for Hermes Agent. All thermo, wellbore, and scaling functions exposed as tools.
 
-## Engineering Focus
-Live enthalpy-density lookup from CoolProp, plus sanity checks:
-- Is point inside saturation dome?
-- Does density match single-phase expectation?
-- Is enthalpy between h_f and h_g at that pressure?
+## Install pygeotoolbox-mcp
 
-## Activity
-1. Read `mcp_thermo_client.py`.
-2. Compute water properties at:
-   - 150 C, 1500 kPa (subcooled liquid)
-   - 250 C, 2500 kPa (two-phase)
-   - 300 C, 500 kPa (superheated vapor)
-3. Verify phases match expectations.
-4. Document recommended response format:
-   - Inputs, Method, Result, Sanity check, Assumptions.
+```bash
+pip install git+https://github.com/zakusworo/pygeotoolbox-mcp.git
+```
+
+## Register as MCP Server in Hermes
+
+Add to your Hermes config (e.g., `~/.hermes/config.yaml`):
+
+```yaml
+mcp_servers:
+  pygeotoolbox:
+    command: fastmcp run /path/to/pygeotoolbox-mcp/src/pygeotoolbox/mcp_server.py
+    transport: stdio
+```
+
+Or run directly:
+```bash
+fastmcp run src/pygeotoolbox/mcp_server.py --transport stdio
+```
+
+## Available Tools (15+)
+
+| Tool | Description | Module |
+|------|-------------|--------|
+| `get_enthalpy` | Enthalpy (kJ/kg) at T, P | thermo |
+| `get_density` | Density (kg/m3) at T, P | thermo |
+| `get_saturation_temperature` | Tsat for pressure | thermo |
+| `get_batch_properties` | Batch compute H, D, V, cp, k | thermo |
+| `calculate_ipr` | Mass flow from IPR | wellbore |
+| `calculate_tpr` | Wellhead pressure from TPR | wellbore |
+| `find_operating_point` | IPR-TPR intersection | wellbore |
+| `check_caco3_scaling` | Ryznar Index + risk | scaling |
+| `check_sio2_scaling` | SiO2 scaling risk | scaling |
+| `check_corrosivity` | Brine corrosivity score | scaling |
+| `simulate_decline` | Exponential/hyperbolic decline | decline |
+| `simulate_reinjection_temperature` | Temp decline from reinjection | decline |
+| `calculate_heat_in_reservoir` | Sensible heat (MJ) | heat_balance |
+| `calculate_power_output` | Gross power (MW) | heat_balance |
+| `run_monte_carlo` | Monte Carlo on any function | sensitivity |
+
+## Prompt Example
+
+```
+Use MCP tool get_enthalpy with T=200C, P=2000kPa.
+Then calculate operating point for P_res=20000kPa, J=0.5, rho=900, TVD=1200m.
+Then check SiO2 scaling risk for SiO2=200mg/L at T=200C.
+```
 
 ## Checklist
-- [ ] Three states computed and verified
-- [ ] Response format documented
-- [ ] Assumptions listed
+- [ ] pygeotoolbox-mcp installed
+- [ ] MCP server registered in Hermes config
+- [ ] `hermes tools` lists pygeotoolbox tools
+- [ ] Enthalpy lookup matches IAPWS
+- [ ] Operating point physically feasible
+- [ ] Scaling risk classified correctly

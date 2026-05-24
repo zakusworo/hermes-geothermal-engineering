@@ -16,6 +16,7 @@ This is a Hermes course for geothermal reservoir engineering.  All code, analysi
 ## Thermodynamic Properties
 
 - Prefer CoolProp or IAPWS-IF97 standard libraries for water/steam properties.
+- Use pygeotoolbox-mcp (`pygeotoolbox.thermo`) for batch properties, saturation curves, and steam quality.
 - Never silently hand-roll water properties.  If using a correlation, document it and state applicability range.
 - Always verify T and P are within valid range:
   - IAPWS-IF97: 0 < T < 1273 K, 0 < P < 100 MPa
@@ -28,6 +29,7 @@ This is a Hermes course for geothermal reservoir engineering.  All code, analysi
 - Inflow Performance Relationship (IPR): relate bottomhole flowing pressure to mass flow.
 - Tubing Performance Relationship (TPR): relate wellhead pressure to mass flow (includes friction + elevation).
 - Operating point: IPR = TPR intersection.
+- Use pygeotoolbox-mcp (`pygeotoolbox.wellbore`) for operating point and productivity index.
 - Always check physical bounds:
   - mass flow > 0, flowing pressure < reservoir pressure, wellhead pressure > atmospheric.
 - Prefer known geothermal IPR models (linear, quadratic, or productivity index) over generic oil-gas models.
@@ -38,7 +40,20 @@ This is a Hermes course for geothermal reservoir engineering.  All code, analysi
   - saturation index (e.g., amorphous silica, calcite)
   - temperature at which saturation is reached
   - whether the fluid is single-phase or two-phase during cooling
+- Use pygeotoolbox-mcp (`pygeotoolbox.scaling`) for RSI, SiO2 risk, and brine density.
 - Use PHREEQC-style or geochem library results; do not invent solubility curves.
+
+## Decline and Sustainability
+
+- Use pygeotoolbox-mcp (`pygeotoolbox.decline`) for pressure/temperature decline and reinjection models.
+- Use `pygeotoolbox.heat_balance` for reservoir heat, thermal recovery, power output, and NPV.
+- Use `pygeotoolbox.sensitivity` for one-factor sweeps, tornado charts, and Monte Carlo.
+
+## MCP Integration
+
+- Install pygeotoolbox-mcp as MCP server: `fastmcp run src/pygeotoolbox/mcp_server.py`
+- Exposes 15 tools to Hermes Agent: get_enthalpy, get_density, calculate_ipr, calculate_tpr, check_caco3_scaling, simulate_decline, etc.
+- Prefer MCP tools over raw CoolProp when working iteratively with Hermes.
 
 ## Simulation Mesh and Timestep
 

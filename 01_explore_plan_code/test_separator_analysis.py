@@ -34,19 +34,17 @@ def test_temperature_decline_detected():
     assert summary['B-02']['temperature_decline_C'] > 0
     assert summary['C-03']['temperature_decline_C'] > 0
 
-def test_monotonic_enthalpy_increases_with_T_placeholder():
+def test_monotonic_enthalpy_increases_with_T():
     """
-    For the simple placeholder formula h = 4.18*T + P/100, at fixed pressure,
-    higher T should yield higher h.  This test is a sanity check that the formula
-    is being applied monotonically at the pressure levels in the data.
+    With pygeotoolbox (CoolProp), enthalpy should increase monotonically with T.
+    Data for each well has decreasing T, so h should decrease too (at similar P).
     """
     data = read_production_data()
     data = add_enthalpy_trends(data)
     well_data = [d for d in data if d['well'] == 'A-01']
     hs = [float(d['enthalpy_kJ_kg']) for d in well_data]
-    # Temperatures are monotonically decreasing in CSV, so enthalpy should decrease too.
     for i in range(len(hs)-1):
         T1 = float(well_data[i]['separator_T_C'])
         T2 = float(well_data[i+1]['separator_T_C'])
         if T1 > T2:
-            assert hs[i] > hs[i+1], "Placeholder enthalpy did not decrease with lower T"
+            assert hs[i] > hs[i+1], "Enthalpy did not decrease with lower T via CoolProp"

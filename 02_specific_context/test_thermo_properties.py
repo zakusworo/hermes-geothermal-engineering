@@ -1,5 +1,12 @@
-"""Tests for Exercise 2: thermodynamic state bug (IAPWS/enthalpy)."""
-from thermo_properties import enthalpy_from_TP, density_from_TP, PropsSI
+"""Tests for Exercise 2: thermodynamic state (IAPWS/enthalpy)."""
+try:
+    from pygeotoolbox import thermo
+    PropsSI = thermo.PropsSI if hasattr(thermo, 'PropsSI') else None
+except ImportError:
+    thermo = None
+    PropsSI = None
+
+from thermo_properties import enthalpy_from_TP, density_from_TP
 
 def test_density_positive():
     rho = density_from_TP(150, 2000)

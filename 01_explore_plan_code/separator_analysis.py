@@ -1,5 +1,11 @@
 import csv, os
 
+# Install pygeotoolbox: pip install git+https://github.com/zakusworo/pygeotoolbox-mcp.git
+try:
+    from pygeotoolbox import thermo
+except ImportError:
+    thermo = None
+
 # Fictional geothermal well data: separator measurements
 DATA = """well,date,separator_T_C,separator_P_kPa,mass_flow_total_kg_s,steam_mass_flow_kg_s,liquid_mass_flow_kg_s
 A-01,2023-01-01,145,250,10.0,1.5,8.5
@@ -30,14 +36,20 @@ def read_production_data(path='sample_separator.csv'):
 
 def add_enthalpy_trends(data):
     """
-    Compute total enthalpy per kg from separator T and P using linear approximation.
-    In real work, use CoolProp / IAPWS.
+    Compute total enthalpy per kg from separator T and P using pygeotoolbox thermo.
+    Falls back to linear approximation if pygeotoolbox not installed.
     """
     for row in data:
         T = float(row['separator_T_C'])
         P = float(row['separator_P_kPa'])
-        # Simple placeholder enthalpy: h = 4.18*T + P/100 (kJ/kg) -- not physically accurate, just for demo
-        row['enthalpy_kJ_kg'] = round(4.18 * T + P / 100.0, 2)
+        if thermo is not None:
+            try:
+                h_J_kg = thermo.enthalpy_from_TP(T, P)
+                row['enthalpy_kJ_kg'] = round(h_J_kg / 1000.0, 2)
+            except Exception:
+                row['enthalpy_kJ_kg'] = round(4.18 * T, 2)  # liquid water approximation
+        else:
+            row['enthalpy_kJ_kg'] = round(4.18 * T, 2)
         row['steam_fraction'] = round(float(row['steam_mass_flow_kg_s']) / float(row['mass_flow_total_kg_s']), 4)
     return data
 
